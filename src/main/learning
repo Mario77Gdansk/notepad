@@ -1,0 +1,172 @@
+DispatcherServlet filtruje endpointydostępne w aplikacji i wybiera ten,
+który takie żądanie może obsłużyć (tzn. deleguje pracę).
+soap źródło danych
+api to źródło danych z serwera aplikacji. To api zawiera praktycznie całą logikę.
+Reszta jest na urządzeniu końcowym.
+
+
+NEXT
+
+Controller
+W celu stworzenia kontrolera trzeba stworzyć klasę,
+która jest oznaczona adnotacją @Controller
+Każdy kontroler może składać się
+z wielu endpointów, które tworzymy, definiując publiczne metody wewnątrz
+tej klasy, które oznaczone są adnotacją:
+@...Mapping, (Gdzie ... oznacza metodę HTTP).
+Adnotacja ta ma możliwość ustawienia ścieżki URL pod jaką dostępna
+będzie ta metoda.
+Aby wywołać endpoint tymczasowo ustaw na klasie
+adnotacje @ResponseBody, która szuka odpowiedniego konwertera na
+podstawie headera Accept
+
+NEXT
+
+Serwisy
+RESTowe , na podstawie jakiegoś żądania HTTP muszą odpowiedzieć
+obiektem, który składa się ze statusu, nagłówków ( headerów ) i ciała
+(
+new ResponseEntity HttpStatus.NO_CONTENT
+new ResponseEntity Response Body", HttpStatus.CREATED );
+new ResponseEntity ResponseBody
+new LinkedMultiValueMap Map.of some header ", List.of header value
+HttpStatus.OK
+);
+ResponseEntity.ok
+ResponseEntity.badRequest (). Something went bad
+ResponseEntity.status HttpStatus.CREATED
+.
+contentType MediaType.APPLICATION_JSON
+.body(
+new Message(" helloMsgAsJson
+
+OPIS DZIAŁANIA I POWIĄZAŃ W KLASACH:
+wchodzimy na adres
+cotroler musi przechwycić adres i zwrócić status i response
+controler wywołuje service
+w service dzieje się jakaś logika:
+logowanie, cenzorowanie itp
+później wywyłujemy repozytorium
+później repozytorium gada z bazą danych
+
+NEXT
+
+PathVariable
+Serwisy
+RESTowe , często pozwalają na pobranie kolekcji pewnych
+obiektów lub obiektu o konkretnym identyfikatorze. Identyfikator ten
+najczęściej jest częścią URLa wykorzystanego podczas wysyłania żądania.
+Jest on zmienną częścią ścieżki. Część taką definiujemy:
+opakowując jej część (i dowolnie wybraną nazwę) wewnątrz znaków { i },
+np. {id}
+mapując zmienną część ścieżki do argumentu metody za pomocą
+adnotacji @PathVariable, w której wskazujemy nazwę użytą w ścieżce
+@RequestMapping (method = RequestMethod. GET , path =
+api /hello/{ id}") public Message sayHelloWithId ((@PathVariable (name =
+" id") final Integer id) {
+
+NEXT
+
+RequestBody
+Niektóre endpointy mogą oczekiwać pewnego obiektu w wysyłanym
+żądaniu. Obiekt ten jest często wysyłany jako JSON czy XML. Podobnie
+jak przy wykorzystywaniu adnotacji @ResponseBody, możemy
+wykorzystać jeden ze skonfigurowanych konwerterów, aby otrzymać
+obiekt stworzony w języku Java. W tym celu wykorzystujemy adnotację
+@RequestBody przy argumencie metody, które reprezentuje ciało
+żądania.
+
+NEXT
+
+RequestParam
+Żądania mogą mieć również wymagane (lub opcjonalne) parametry.
+Parametry te znajdują się w końcowej części URLa , są oddzielona od
+siebie znakiem &, a klucz i wartość oddzielone są znakiem =, np.:
+http://localhost:8080/api/resources?param1=val1&param2=val2
+W celu pobrania wartości tych parametrów do argumentów metody
+wykorzystujemy adnotację @RequestParam
+
+NEXT
+
+SpringData
+Aplikacje webowe najczęściej przechowują dane w pewnych bazach
+danych (SQL lub NoSQL ). Wybierając relacyjną bazę danych i tworząc
+warstwę bazodanową, najczęściej wykorzystujemy framework
+Hibernate
+Baza H2 umożliwia przeglądać jej zawartość za pomocą przeglądarki.
+Domyślnie konsola ta jest jednak wyłączona. Możemy ją włączyć i
+ustawić ścieżkę do połączenia za pomocą:
+spring.h2.console.enabled=
+true
+
+spring.h2.console.enabled=true ten wpis otwiera dostęp do bazy danych z przeglądarki
+application.properties to miejsce wpisu
+
+NEXT
+
+Repozytoria
+Warstwa bazodanowa, tzn. klasy reprezentujące repozytoria, zazwyczaj
+posiadają metody reprezentujące podstawowe operacje CRUD, których
+implementacja najczęściej wygląda identycznie. Implementacja takiego
+interfejsu zostanie wygenerowana, a dostęp do niej zapewnia
+mechanizm proxy
+Mamy możliwość rozszerzenia jednego z trzech interfejsów:
+• CrudRepository
+• PagingAndSortingRepository
+• JpaRepository
+
+NEXT
+
+Tworzenie zapytań
+Repozytoria JPA posiadają unikalną funkcjonalność. Pozwalają na
+tworzenie zapytań za pomocą nazwy metody zdefiniowanej w
+interfejsie. Jej implementacja zostanie wygenerowana. Tworząc takie
+zapytania, musimy pamiętać o pewnych regułach:
+• Jesteśmy w stanie do dowolnego beana wstrzyknąć obiekt
+EntityManager . Pozwala on na wykonywanie prostych operacji
+(CRUD) i wykonywania zapytań z pomocą języka HQL. Pamiętajmy, że
+komponenty reprezentujące warstwę bazodanową lepiej, zamiast
+adnotacją @Component, oznaczyć adnotacją @Repository.w
+przypadku pobierania danych nazwa metody musi zaczynać się od
+słowa find , read , query lub get (w przykładach wykorzystywane
+będzie find ). Po tym słowie kluczowym wstawiamy opcjonalne słowo
+kluczowe.
+po słowie By podajemy (opcjonalnie) szczegóły zapytania, które możemy
+utożsamiać z częścią zapytania SQL, która następuje po słowie
+kluczowym WHERE.
+części te powinny wskazywać na nazwy pól encji, o której wartość
+pytamy (nazwy pól zaczynamy wielką literą)
+gdy chcemy zapytać o wartość kilku pól, nazwy pól łączymy, podobnie
+jak w zwykłym zapytaniu SQL, słowem:
+• Or
+• And
+w zależności od tego o wartości ilu pól pytamy, metoda powinna mieć
+argument odpowiedniego typu dla każdego z nich (z zachowaniem
+kolejności)
+Tworząc zapytania za pomocą nazw metod, pomiędzy słowo
+find a By możemy wstawić kilka
+opcjonalnych słów kluczowych, które mają również swoje odpowiedniki w języku SQL, np.:
+• Distinct
+• All
+• TopX , gdzie X jest liczbą naturalną
+W zależności od tego, czy zapytanie może zwrócić co najwyżej jeden rekord, lub wiele,
+powinniśmy odpowiednio dobrać zwracany typ danych. Niektóre z możliwości to:
+w przypadku chęci pobrania co najwyżej jednego obiektu:
+• Optional
+• obiektu encji ( null w przypadku nieznalezienia rekordu)
+w przypadku pobierania wielu rekordów:
+• List< TypEncji
+• Set< TypEncji
+
+
+w domu wygeneruj aplikację z nowymi userami
+login
+hasło
+imię
+nazwisko
+telefon
+thymeleaf z sda
+
+tworzenie kodu zaczynam od stworzenia nowego brancha w GIT
+
+
