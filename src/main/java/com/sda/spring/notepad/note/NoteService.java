@@ -1,12 +1,11 @@
-package com.sda.spring.notepad;
+package com.sda.spring.notepad.note;
 
+import com.sda.spring.notepad.Censor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 

@@ -1,4 +1,4 @@
-package com.sda.spring.notepad;
+package com.sda.spring.notepad.note;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;

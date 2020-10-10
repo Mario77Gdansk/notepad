@@ -1,13 +1,12 @@
 package com.sda.spring.notepad;
 
+import com.sda.spring.notepad.note.Note;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 @Component
 @Slf4j
